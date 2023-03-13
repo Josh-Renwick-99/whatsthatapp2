@@ -7,6 +7,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import ProfileScreen from "./screens/mainScreens/profile";
 import ChatsScreen from "./screens/mainScreens/chats";
 import ContactsScreen from "./screens/mainScreens/contacts";
+import { AntDesign, Entypo } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -14,9 +15,33 @@ const Tab = createMaterialBottomTabNavigator();
 function TabNavigator() {
   return(
     <Tab.Navigator>
-      <Tab.Screen name="contacts" component={ContactsScreen}/>
-      <Tab.Screen name="chats" component={ChatsScreen}/>
-      <Tab.Screen name="profile" component={ProfileScreen}/>
+      <Tab.Screen 
+        name="contacts" 
+        component={ContactsScreen}
+        options={{
+          tabBarIcon: ({color, size}) => {
+            return <AntDesign name="contacts" size={28} color="green" />
+          }
+        }}
+      />
+      <Tab.Screen 
+        name="chats" 
+        component={ChatsScreen}
+        options={{
+          tabBarIcon: ({color, size}) => {
+            return <Entypo name="chat" size={28} color="green" />
+          }
+        }}
+      />
+      <Tab.Screen 
+        name="profile" 
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: () => {
+            return <AntDesign name="profile" size={28} color="green" />
+          }
+        }}
+      />
     </Tab.Navigator>
   )
 }

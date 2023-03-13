@@ -30,7 +30,7 @@ const ProfileScreen = () => {
   const [stagedPassword, setStagedPassword] = useState('')
 
   useEffect(() => {
-    getAvatar(handleSetAvatar)
+    //getAvatar(handleSetAvatar)
     getUserInfo(handleProfileUpdate)
   })
 
