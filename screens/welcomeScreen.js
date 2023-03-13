@@ -47,7 +47,7 @@ const WelcomeScreen = () => {
         transform: [
         { translateY: withTiming(interpolation, { duration: 1000 }) },
         ],
-    };
+      };
     });
 
 
@@ -87,7 +87,7 @@ const WelcomeScreen = () => {
     })
 
     const showToast = (message) => {
-    ToastAndroid.show(message, ToastAndroid.SHORT, ToastAndroid.TOP);
+      ToastAndroid.showWithGravity(message, ToastAndroid.SHORT, ToastAndroid.TOP);
     }
 
     const enableButton = () => {
@@ -167,30 +167,28 @@ const WelcomeScreen = () => {
 
   return (
     <Animated.View style={styles.container}>
-    <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
+      <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
         <Svg height={height + 100} width={width}>
-        <ClipPath id="clipPathId">
+          <ClipPath id="clipPathId">
             <Ellipse cx={width / 2} rx={height} ry={height + 100} />
-        </ClipPath>
-        <Image
+          </ClipPath>
+          <Image
             href={require("../assets/loginBackground.jpg")}
             width={width + 100}
             height={height + 100}
             preserveAspectRatio="xMidYMid slice"
             clipPath="url(#clipPathId)"
-        />
+          />
         </Svg>
-        <Animated.View
-        style={[styles.closeButtonContainer, closeButtonContainerStyle]}
-        >
-        <Text onPress={closeButton}>X</Text>
+        <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
+          <Text onPress={closeButton}>X</Text>
         </Animated.View>
-    </Animated.View>
-    <View style={styles.bottomContainer}>
+      </Animated.View>
+      <View style={styles.bottomContainer}>
         <Animated.View style={buttonsAnimatedStyle}>
-        <Pressable style={styles.button} onPress={loginButton}>
+          <Pressable style={styles.button} onPress={loginButton}>
             <Text style={styles.buttonText}>Login!</Text>
-        </Pressable>
+          </Pressable>
         </Animated.View>
         <Animated.View style={buttonsAnimatedStyle}>
         <Pressable style={styles.button} onPress={registerButton}>
@@ -217,43 +215,43 @@ const WelcomeScreen = () => {
                 onChangeText={(text) => setLastName({ value: text, error: '' })}
             />
             </>
-        )}
-        <TextInput
-            placeholder="Email"
-            placeholderTextColor="black"
-            style={styles.textInput}
-            label="Email"
-            returnKeyType="next"
-            value={email.value}
-            onChangeText={(text) => setEmail({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-        />
-        <TextInput
-            placeholder="Password"
-            placeholderTextColor="black"
-            style={styles.textInput}
-            label="Password"
-            returnKeyType="done"
-            value={password.value}
-            onChangeText={(text) => setPassword({ value: text, error: '' })}
-            error={!!password.error}
-            errorText={password.error}
-            secureTextEntry
-        />
-        <Animated.View style={[styles.formButton, formButtonAnimatedStyle]}>
-            <Pressable onPress={handlePress}>
-            <Text style={styles.buttonText}>
-                {isRegistering ? "Register!" : "Login!"}
-            </Text>
-            </Pressable>
-        </Animated.View>
-        </Animated.View>
-    </View>
+            )}
+            <TextInput
+                placeholder="Email"
+                placeholderTextColor="black"
+                style={styles.textInput}
+                label="Email"
+                returnKeyType="next"
+                value={email.value}
+                onChangeText={(text) => setEmail({ value: text, error: '' })}
+                error={!!email.error}
+                errorText={email.error}
+                autoCapitalize="none"
+                autoCompleteType="email"
+                textContentType="emailAddress"
+                keyboardType="email-address"
+            />
+            <TextInput
+                placeholder="Password"
+                placeholderTextColor="black"
+                style={styles.textInput}
+                label="Password"
+                returnKeyType="done"
+                value={password.value}
+                onChangeText={(text) => setPassword({ value: text, error: '' })}
+                error={!!password.error}
+                errorText={password.error}
+                secureTextEntry
+            />
+            <Animated.View style={[styles.formButton, formButtonAnimatedStyle]}>
+              <Pressable onPress={handlePress}>
+                <Text style={styles.buttonText}>
+                    {isRegistering ? "Register!" : "Login!"}
+                </Text>
+              </Pressable>
+            </Animated.View>  
+          </Animated.View>
+        </View>
     </Animated.View>
   );
 }
