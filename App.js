@@ -4,9 +4,9 @@ import WelcomeScreen from "./screens/welcomeScreen";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator  } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import ProfileScreen from "./screens/mainScreens/profile";
-import ChatsScreen from "./screens/mainScreens/chats";
-import ContactsScreen from "./screens/mainScreens/contacts";
+import ProfileScreen from "./screens/profile";
+import ChatsScreen from "./screens/chats";
+import ContactsScreen from "./screens/contacts";
 import { AntDesign, Entypo } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
@@ -19,7 +19,7 @@ function TabNavigator() {
         name="contacts" 
         component={ContactsScreen}
         options={{
-          tabBarIcon: ({color, size}) => {
+          tabBarIcon: () => {
             return <AntDesign name="contacts" size={28} color="green" />
           }
         }}
@@ -28,7 +28,7 @@ function TabNavigator() {
         name="chats" 
         component={ChatsScreen}
         options={{
-          tabBarIcon: ({color, size}) => {
+          tabBarIcon: () => {
             return <Entypo name="chat" size={28} color="green" />
           }
         }}

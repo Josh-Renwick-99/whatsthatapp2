@@ -11,9 +11,9 @@
     TouchableOpacity
     } from 'react-native';
   import Modal from "react-native-modal";
-  import { postLogout, postAvatar, getAvatar, getUserInfo, patchUserInfo } from '../../util/Client';
+  import { postLogout, postAvatar, getAvatar, getUserInfo, patchUserInfo } from '../util/Client';
   import { useNavigation } from "@react-navigation/native";
-  import styles from '../../StyleSheets/profileScreenStyles';
+  import styles from '../StyleSheets/profileScreenStyles';
   import * as ImagePicker from 'expo-image-picker';
 
 const ProfileScreen = () => {
@@ -98,14 +98,14 @@ const ProfileScreen = () => {
 
 
   return (
-    <ImageBackground source={require('./profileBackground.jpg')} blurRadius={modalVisible ? 4 : 0} style={{flex: 1}}>
+    <ImageBackground source={require('../assets/profileBackground.jpg')} blurRadius={modalVisible ? 4 : 0} style={{flex: 1}}>
       <View style={styles.container}>
       {!modalVisible && (
         <><View style={styles.profileContainer}>
             <View style={styles.avatarContainer}>
               <Image
                 style={styles.avatar}
-                source={avatar ? { uri: avatar } : require('./defaultAvatar.png')}
+                source={avatar ? { uri: avatar } : require('../assets/defaultAvatar.png')}
                 resizeMode="contain" />
             </View>
             <View style={styles.editText}>
@@ -121,22 +121,23 @@ const ProfileScreen = () => {
                 <Text adjustsFontSizeToFit={true} minimumFontScale={0.5} style={styles.emailText}>{email}</Text>
               </View>
             </View>
-          </View><View style={styles.buttonContainer}>
-              <View>
-                <View style={styles.logoutButton}>
-                  <Pressable onPress={() => setModalVisible(true)}>
-                    <Text style={styles.logoutButtonText}>Edit Profile</Text>
-                  </Pressable>
-                </View>
+          </View>
+          <View style={styles.buttonContainer}>
+            <View>
+              <View style={styles.logoutButton}>
+                <Pressable onPress={() => setModalVisible(true)}>
+                  <Text style={styles.logoutButtonText}>Edit Profile</Text>
+                </Pressable>
               </View>
-              <View>
-                <View style={styles.logoutButton}>
-                  <Pressable onPress={() => handleLogout()}>
-                    <Text style={styles.logoutButtonText}>Logout</Text>
-                  </Pressable>
-                </View>
+            </View>
+            <View>
+              <View style={styles.logoutButton}>
+                <Pressable onPress={() => handleLogout()}>
+                  <Text style={styles.logoutButtonText}>Logout</Text>
+                </Pressable>
               </View>
-            </View></>
+            </View>
+          </View></>
         )}
         <Modal
           animationType="slide"

@@ -197,3 +197,26 @@ export const postAvatar = async (blob, handleSetAvatar, showToast) => {
     }
 }
 
+export const getContacts = async () => {
+    try {
+      const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+      const response = await fetch(`${URL_ANDROID}/contacts`, {
+        method: 'GET',
+        headers: {
+          'X-Authorization' : token,
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log("Fetched contacts");
+        const json = await response.json();
+        return json;
+      } else if (response.status === 400) {
+        console.log("Unauthorized");
+      } else {
+        console.log("Oops, something went wrong");
+      }
+    } catch (error) {
+      console.log("Error fetching contacts:", error);
+    }
+  };
