@@ -30,10 +30,16 @@ const ProfileScreen = () => {
   const [stagedPassword, setStagedPassword] = useState('')
 
   useEffect(() => {
-    //getAvatar(handleSetAvatar)
-    getUserInfo(handleProfileUpdate)
-  })
-
+    const loadAvatar = async () =>{
+      await getAvatar(handleSetAvatar)
+    }
+    const loadInfo = async() => {
+      await getUserInfo(handleProfileUpdate)
+    }
+    //loadAvatar()
+    loadInfo()
+  }, [handleSetAvatar, handleProfileUpdate])
+  
   const handleProfileUpdate = (first_name, last_name, email) => {
     setFirstName(first_name)
     setLastName(last_name)

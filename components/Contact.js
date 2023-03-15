@@ -1,29 +1,41 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const Contact = ({item, removeContact}) => {
+const Contact = ({item, removeContact, fromContacts, addContact}) => {
 
     const handleRemoveContact = () => {
-        removeContact();
+      removeContact();
     }
 
-        return(
-        <View style={styles.itemContainer}>
-            <View style={styles.textContainer}>
-                <Text style={styles.itemText}>{item.firstName} {item.lastName}</Text>
-                <Text style={styles.itemText}>{item.email}</Text>
-            </View>
-            <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.chatButton} onPress={() => console.log("Chatting")}>
-                <Text style={styles.buttonText}>Chat</Text>
-            </TouchableOpacity>  
-            <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveContact()}>
-                <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>     
-            </View>
+    const handleAddContact = () => {
+      addContact();
+    }
+
+    return(
+      <View style={styles.itemContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.itemText}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
+          <Text style={styles.itemText}>{item.email}</Text>
         </View>
+        <View style={styles.buttonContainer}>
+          {fromContacts ? (
+            <>
+              <TouchableOpacity style={styles.chatButton} onPress={() => console.log("Chatting")}>
+                <Text style={styles.buttonText}>Chat</Text>
+              </TouchableOpacity>  
+              <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveContact()}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>     
+            </>
+          ) : (
+            <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
+              <Text style={styles.buttonText}>Add Contact</Text>
+            </TouchableOpacity>     
+          )}
+        </View>
+      </View>
     )
-}
+  }
 
 export default Contact
 

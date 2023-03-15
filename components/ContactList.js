@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, SectionList } from 'react-native';
 import styles  from '../StyleSheets/contactsStyles'
 import Contact from '../components/Contact'
-import { TouchableOpacity } from 'react-native-gesture-handler';
-
-const ContactList = ({contacts, fromContacts}) => {
+const ContactList = ({contacts, fromContacts, handleAddContact, handleRemoveContact}) => {
     const [data, setData] = useState(contacts);
 
     const sections = data.reduce((acc, contact) => {
-        const letter = contact.lastName.charAt(0).toUpperCase();
+        const letter = contact.last_name ? contact.last_name.charAt(0).toUpperCase() : contact.family_name.charAt(0).toUpperCase();
         const sectionIndex = acc.findIndex(section => section.title === letter);
         if (sectionIndex >= 0) {
         acc[sectionIndex].data.push(contact);
@@ -24,16 +22,27 @@ const ContactList = ({contacts, fromContacts}) => {
     </View>
   );
 
-  const removeContact = (contact) => {
-    const updatedData = data.filter((c) => c !== contact);
+  const removeContact = (item, fromModal) => {
+    const updatedData = data.filter((c) => c !== item);
     setData(updatedData);
+    if (!fromModal) {
+      handleRemoveContact(item);
+    }
   };
 
+  const addContact = async (item) => {
+    handleAddContact(item)
+    removeContact(item, true)
+    console.log(item)
+  }
+
   const renderItem = ({ item }) => (
-      <Contact 
+    <Contact 
         item={item} 
-        removeContact={() => removeContact(item)}>
-        </Contact>
+        removeContact={() => removeContact(item)}
+        addContact={() => addContact(item)}
+        fromContacts = {fromContacts}>
+    </Contact>
   );
 
   return (

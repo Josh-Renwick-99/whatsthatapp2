@@ -153,11 +153,16 @@ export const getAvatar = async (handleSetAvatar) => {
     console.log(`${URL_ANDROID}/user/${id}/photo`, token)
     fetch(`${URL_ANDROID}/user/${id}/photo`, {
         method: "GET",
+        mode: "cors",
         headers: {
             "X-Authorization" : token,
         }
     })
     .then((response) => {
+        console.log("Response:", response)
+        console.log("Response Status: ", response.status)
+        console.log("Response Headers: ", response.headers)
+        console.log("Response Body: ", response.body)
         return response.blob();
     })
     .then((responseBlob) => {
@@ -199,24 +204,94 @@ export const postAvatar = async (blob, handleSetAvatar, showToast) => {
 
 export const getContacts = async () => {
     try {
-      const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-      const response = await fetch(`${URL_ANDROID}/contacts`, {
-        method: 'GET',
-        headers: {
-          'X-Authorization' : token,
-        },
-      });
-  
-      if (response.status === 200) {
-        console.log("Fetched contacts");
-        const json = await response.json();
-        return json;
-      } else if (response.status === 400) {
-        console.log("Unauthorized");
-      } else {
-        console.log("Oops, something went wrong");
-      }
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/contacts`, {
+            method: 'GET',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200) {
+            console.log("Fetched contacts")
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
     } catch (error) {
-      console.log("Error fetching contacts:", error);
+        console.log("Error fetching contacts:", error);
     }
-  };
+};
+
+export const getUsers = async () => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/search?search_in=all&limit=20&offset=0`, {
+            method: 'GET',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Fetched users");
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log("Error fetching contacts:", error);
+    }
+};
+
+export const addContact = async (id) => {
+    try {
+        console.log(`Attempting to add contact ${id}`)
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/user/${id}/contact`, {
+            method: 'POST',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Added contact successfully");
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const removeContact = async(id) => {
+    try {
+        console.log(`Attempting to remove contact ${id}`)
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/user/${id}/contact`, {
+            method: 'DELETE',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Removed contact successfully");
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}

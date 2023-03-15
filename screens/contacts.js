@@ -2,124 +2,82 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, SectionList, Modal, TouchableOpacity } from 'react-native';
 import styles  from '../StyleSheets/contactsStyles'
 import ContactList from '../components/ContactList'
-import { getContacts } from '../util/Client'
+import { getContacts, getUsers } from '../util/Client'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addContact, removeContact } from '../util/Client';
 
-const contacts = [
-  {
-    firstName: "Walter",
-    lastName: "White",
-    email: "wwhite@hotmail.com"
-  },
-  {
-    firstName: "Jesse",
-    lastName: "Pinkman",
-    email: "jpinkman@gmail.com"
-  },
-  {
-    firstName: "Gustavo",
-    lastName: "Fring",
-    email: "gfring@gmail.com"
-  },
-  {
-    firstName: "Mike",
-    lastName: "Ehrmantraut",
-    email: "mehrmantraut@hotmail.com"
-  },
-  {
-    firstName: "Saul",
-    lastName: "Goodman",
-    email: "Saulgoodman@yahoo.co.uk"
-  },
-  {
-    firstName: "Kim",
-    lastName: "Wexler",
-    email: "kwexler@gmail.com"
-  },
-  {
-    firstName: "Jimmy",
-    lastName: "McGill",
-    email: "jmcgill@yahoo.com"
-  },
-  {
-    firstName: "Nacho",
-    lastName: "Varga",
-    email: "nacho.varga@gmail.com"
-  },
-  {
-    firstName: "Hector",
-    lastName: "Salamanca",
-    email: "hector.salamanca@hotmail.com"
-  },
-  {
-    firstName: "Tuco",
-    lastName: "Salamanca",
-    email: "t.salamanca@gmail.com"
-  },
-  {
-    firstName: "Lalo",
-    lastName: "Salamanca",
-    email: "lalo.salamanca@yahoo.com"
-  },
-  {
-    firstName: "Hank",
-    lastName: "Schrader",
-    email: "h.schrader@gmail.com"
-  },
-  {
-    firstName: "Marie",
-    lastName: "Schrader",
-    email: "marie.schrader@hotmail.com"
-  },
-  {
-    firstName: "Skyler",
-    lastName: "White",
-    email: "skyler.white@yahoo.com"
-  },
-  {
-    firstName: "Ted",
-    lastName: "Beneke",
-    email: "tbeneke@gmail.com"
-  },
-  {
-    firstName: "Lydia",
-    lastName: "Rodarte-Quayle",
-    email: "lrodartequayle@hotmail.com"
-  }
-];
-
-const handleFindContacts = () => {
-}
-
-const ContactsScreen = () => {  
+function ContactsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      const contact = await getContacts();
-    }
-    fetchContacts()
-  })
-  console.log(modalVisible)
+    const fetchContactsAndUsers = async () => {
+      const cList = await getContacts();
+      const uList = await getUsers();
+      const userId = await AsyncStorage.getItem("WhatsThat_usr_id")
+      const filteredList = uList.filter(user => !cList.some(contact => contact.user_id === user.user_id));
+      setContacts(cList);
+      setUsers(filteredList);
+    };
+    fetchContactsAndUsers();
+  }, []);
+
+  const handleFindContacts = async () => {
+    setModalVisible(true);
+  };
+
+  const handleAddContact = (contact) => {
+    const cList = [...contacts];
+    cList.push(contact)
+    const filteredUsers = users.filter(user => !cList.includes(user));
+    setUsers(filteredUsers)
+    setContacts(cList)
+    addContact(contact.user_id)
+  }
+
+  const handleRemoveContact = (contact) => {
+    const uList = [...users]; 
+    uList.push(contact);
+    const cList = [...contacts]
+    const updatedList = cList.filter((c) => c !== contact);
+    setUsers(uList);
+    setContacts(updatedList)
+    removeContact(contact.user_id);
+  }
+
 
   return (
     <View style={{flex: 1, paddingTop: 50, backgroundColor: '#FFF'}}>
       {!modalVisible && (
-      <><View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Text style={styles.text}>Find Contacts</Text>
-          </TouchableOpacity>
-        </View><ContactList contacts={contacts} fromContacts></ContactList></>
+        <>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={() => handleFindContacts()}>
+              <Text style={styles.text}>Find Contacts</Text>
+            </TouchableOpacity>
+          </View>
+          <ContactList 
+          key={contacts.length} 
+          contacts={contacts} 
+          handleRemoveContact={(contact) => handleRemoveContact(contact)}
+          fromContacts/>
+        </>
       )}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalContainer}>
-            <TouchableOpacity style={[styles.submitButton, {marginLeft: 10}]} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonText}>Close</Text>
-            </TouchableOpacity>
+          <View style={styles.modalListContainer}>
+            <ContactList 
+              contacts={users} 
+              handleAddContact={(contact) => handleAddContact(contact)} />
+          </View>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonText}>Close</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     </View>
   );
-};
+}
 
 export default ContactsScreen;
 
