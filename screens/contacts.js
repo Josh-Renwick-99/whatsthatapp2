@@ -90,18 +90,12 @@ function ContactsScreen() {
               <Text style={styles.text}>Find Contacts</Text>
             </TouchableOpacity>
           </View>
-          {contacts.length === 0 ? (
             <ContactList 
             key={contacts.length} 
             contacts={contacts} 
             handleRemoveContact={(contact) => handleRemoveContact(contact)}
             handleBlockContact={(contact) => handleBlockContact(contact)}
             fromContacts/>
-          ) : (
-            <View>
-              <Text> No contacts in your phone book</Text>
-            </View>
-          )}
         </>
       )}
       {

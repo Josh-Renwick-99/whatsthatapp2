@@ -19,49 +19,42 @@ const Contact = ({item, removeContact, fromContacts, fromBlockList, addContact, 
       unblockContact();
     }
 
-    if (fromBlockList){
-      return(
-        <View style={styles.itemContainer}>
-        <View style={styles.textContainer}>
-          <Text style={[styles.itemText, {fontWeight: 'bold'}]}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
-          <Text style={[styles.itemText, {color:'gray', fontWeight:'700'}]}>{item.email}</Text>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.chatButton} onPress={() => handleUnblockContact()}>
-              <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/unblock-contact.png')}></Image>
-          </TouchableOpacity>     
-        </View>
-      </View>
-      )
-    } else {
-      return(
-        <View style={styles.itemContainer}>
-          <View style={styles.textContainer}>
-            <Text style={[styles.itemText, {fontWeight: 'bold'}]}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
-            <Text style={[styles.itemText, {color:'gray', fontWeight:'700'}]}>{item.email}</Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            {fromContacts ? (
-              <>
-                <TouchableOpacity style={styles.button} onPress={() => console.log("Chatting")}>
-                  <Image style={{width: 26, height: 26, marginTop:4,}} source={require('../assets/chat.png')}></Image>
-                </TouchableOpacity>  
-                <TouchableOpacity style={styles.button} onPress={() => handleRemoveContact()}>
-                  <Image style={{width: 32, height: 32}} source={require('../assets/remove-contact.png')}></Image>
-                </TouchableOpacity>  
-                <TouchableOpacity style={styles.button} onPress={() => handleBlockContact()}>
-                  <Image style={{width: 32, height: 32}} source={require('../assets/block-contact.png')}></Image>
-                </TouchableOpacity>    
-              </>
-            ) : (
-              <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
-                  <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/add-contact.png')}></Image>
-              </TouchableOpacity>     
-            )}
-          </View>
-        </View>
-      )
-    }
+    return(
+    <View style={styles.itemContainer}>
+    <View style={styles.textContainer}>
+      <Text style={[styles.itemText, {fontWeight: 'bold'}]}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
+      <Text style={[styles.itemText, {color:'gray', fontWeight:'700'}]}>{item.email}</Text>
+    </View>
+    <View style={styles.buttonContainer}>
+      {fromBlockList ? (
+        <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
+          <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/unblock-contact.png')}></Image>
+        </TouchableOpacity>     
+      ) : (
+        <>
+          {fromContacts && (
+            <>
+              <TouchableOpacity style={styles.button} onPress={() => console.log("Chatting")}>
+                <Image style={{width: 26, height: 26, marginTop:4,}} source={require('../assets/chat.png')}></Image>
+              </TouchableOpacity>  
+              <TouchableOpacity style={styles.button} onPress={() => handleRemoveContact()}>
+                <Image style={{width: 32, height: 32}} source={require('../assets/remove-contact.png')}></Image>
+              </TouchableOpacity>  
+              <TouchableOpacity style={styles.button} onPress={() => handleBlockContact()}>
+                <Image style={{width: 32, height: 32}} source={require('../assets/block-contact.png')}></Image>
+              </TouchableOpacity>    
+            </>
+          )}
+          {!fromContacts && (
+            <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
+              <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/add-contact.png')}></Image>
+            </TouchableOpacity>     
+          )}
+        </>
+      )}
+    </View>
+  </View>
+  )
 
   }
 
