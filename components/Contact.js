@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const Contact = ({item, removeContact, fromContacts, addContact}) => {
+const Contact = ({item, removeContact, fromContacts, fromBlockList, addContact, blockContact, unblockContact}) => {
 
     const handleRemoveContact = () => {
       removeContact();
@@ -11,30 +11,58 @@ const Contact = ({item, removeContact, fromContacts, addContact}) => {
       addContact();
     }
 
-    return(
-      <View style={styles.itemContainer}>
+    const handleBlockContact = () => {
+      blockContact();
+    }
+
+    const handleUnblockContact = () => {
+      unblockContact();
+    }
+
+    if (fromBlockList){
+      return(
+        <View style={styles.itemContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.itemText}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
-          <Text style={styles.itemText}>{item.email}</Text>
+          <Text style={[styles.itemText, {fontWeight: 'bold'}]}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
+          <Text style={[styles.itemText, {color:'gray', fontWeight:'700'}]}>{item.email}</Text>
         </View>
         <View style={styles.buttonContainer}>
-          {fromContacts ? (
-            <>
-              <TouchableOpacity style={styles.chatButton} onPress={() => console.log("Chatting")}>
-                <Text style={styles.buttonText}>Chat</Text>
-              </TouchableOpacity>  
-              <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveContact()}>
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>     
-            </>
-          ) : (
-            <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
-              <Text style={styles.buttonText}>Add Contact</Text>
-            </TouchableOpacity>     
-          )}
+          <TouchableOpacity style={styles.chatButton} onPress={() => handleUnblockContact()}>
+              <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/unblock-contact.png')}></Image>
+          </TouchableOpacity>     
         </View>
       </View>
-    )
+      )
+    } else {
+      return(
+        <View style={styles.itemContainer}>
+          <View style={styles.textContainer}>
+            <Text style={[styles.itemText, {fontWeight: 'bold'}]}>{item.given_name ? item.given_name : item.first_name} {item.family_name ? item.family_name : item.last_name}</Text>
+            <Text style={[styles.itemText, {color:'gray', fontWeight:'700'}]}>{item.email}</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            {fromContacts ? (
+              <>
+                <TouchableOpacity style={styles.button} onPress={() => console.log("Chatting")}>
+                  <Image style={{width: 26, height: 26, marginTop:4,}} source={require('../assets/chat.png')}></Image>
+                </TouchableOpacity>  
+                <TouchableOpacity style={styles.button} onPress={() => handleRemoveContact()}>
+                  <Image style={{width: 32, height: 32}} source={require('../assets/remove-contact.png')}></Image>
+                </TouchableOpacity>  
+                <TouchableOpacity style={styles.button} onPress={() => handleBlockContact()}>
+                  <Image style={{width: 32, height: 32}} source={require('../assets/block-contact.png')}></Image>
+                </TouchableOpacity>    
+              </>
+            ) : (
+              <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
+                  <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/add-contact.png')}></Image>
+              </TouchableOpacity>     
+            )}
+          </View>
+        </View>
+      )
+    }
+
   }
 
 export default Contact
@@ -49,6 +77,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     buttonContainer:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
     },
     itemContainer: {
       flexDirection: 'row',
@@ -57,7 +87,7 @@ const styles = StyleSheet.create({
     },
     itemText: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 14,
       marginLeft: 10,
     },
     deleteButton: {
@@ -68,8 +98,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         alignItems: 'center'
     },
-    chatButton: {
-        backgroundColor: 'green',
+    button: {
         borderRadius: 5,
         paddingHorizontal: 10,
         paddingVertical: 5,

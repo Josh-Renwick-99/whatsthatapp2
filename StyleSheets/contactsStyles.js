@@ -11,11 +11,19 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     buttonContainer: {
+        flexDirection: 'row',
+        marginLeft: 50,
         height: 60,
-        width: 120,
-        marginLeft: 280,
-        justifyContent: 'center'
-    },
+        width: 280,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+      leftButton: {
+        justifyContent: 'flex-start'
+      },
+      rightButton: {
+        justifyContent: 'flex-end'
+      },
     text:{
         fontSize: 16,
         fontWeight: 'bold'

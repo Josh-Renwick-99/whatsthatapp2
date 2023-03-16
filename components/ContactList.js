@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, SectionList } from 'react-native';
 import styles  from '../StyleSheets/contactsStyles'
 import Contact from '../components/Contact'
-const ContactList = ({contacts, fromContacts, handleAddContact, handleRemoveContact}) => {
-    const [data, setData] = useState(contacts);
-
+const ContactList = ({contacts, fromContacts, fromBlockList, handleAddContact, handleRemoveContact, handleBlockContact, handleUnblockContact}) => {
+    const [data, setData] = useState(contacts); 
+    
     const sections = data.reduce((acc, contact) => {
         const letter = contact.last_name ? contact.last_name.charAt(0).toUpperCase() : contact.family_name.charAt(0).toUpperCase();
         const sectionIndex = acc.findIndex(section => section.title === letter);
@@ -26,6 +26,7 @@ const ContactList = ({contacts, fromContacts, handleAddContact, handleRemoveCont
     const updatedData = data.filter((c) => c !== item);
     setData(updatedData);
     if (!fromModal) {
+      console.log("here")
       handleRemoveContact(item);
     }
   };
@@ -33,7 +34,17 @@ const ContactList = ({contacts, fromContacts, handleAddContact, handleRemoveCont
   const addContact = async (item) => {
     handleAddContact(item)
     removeContact(item, true)
-    console.log(item)
+  }
+
+  const blockContact = async (item) => {
+    handleBlockContact(item)
+    removeContact(item, true)
+  }
+
+  const unblockContact = async (item) => {
+    const updatedData = data.filter((c) => c !== item);
+    setData(updatedData)
+    handleUnblockContact(item)
   }
 
   const renderItem = ({ item }) => (
@@ -41,7 +52,11 @@ const ContactList = ({contacts, fromContacts, handleAddContact, handleRemoveCont
         item={item} 
         removeContact={() => removeContact(item)}
         addContact={() => addContact(item)}
-        fromContacts = {fromContacts}>
+        blockContact={() => blockContact(item)}
+        unblockContact={() => unblockContact(item)}
+        fromContacts = {fromContacts}
+        fromBlockList = {fromBlockList}
+        >
     </Contact>
   );
 

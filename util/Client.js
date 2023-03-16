@@ -295,3 +295,74 @@ export const removeContact = async(id) => {
         console.log(error);
     }
 }
+
+export const getBlockedContacts = async() => {
+    try {
+        console.log(`Attempting to fetch blocked contacts`)
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/blocked`, {
+            method: 'GET',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Fetched blocked contacts");
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const postBlockContact = async (id) => {
+    try {
+        console.log(`Attempting to block contact ${id}`)
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/user/${id}/block`, {
+            method: 'POST',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Blocked contact successfully");
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const deleteBlockedContact = async (id) => {
+    try {
+        console.log(`Attempting to unblock contact ${id}`)
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const response = await fetch(`${URL_ANDROID}/user/${id}/block`, {
+            method: 'DELETE',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Unblocked contact successfully");
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
