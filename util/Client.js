@@ -159,10 +159,6 @@ export const getAvatar = async (handleSetAvatar) => {
         }
     })
     .then((response) => {
-        console.log("Response:", response)
-        console.log("Response Status: ", response.status)
-        console.log("Response Headers: ", response.headers)
-        console.log("Response Body: ", response.body)
         return response.blob();
     })
     .then((responseBlob) => {
@@ -366,3 +362,59 @@ export const deleteBlockedContact = async (id) => {
         console.log(error);
     }
 }
+
+export const getChats = async () => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const id = await AsyncStorage.getItem("WhatsThat_usr_id");
+        console.log(`Fetching chats for user ${id}`)
+        const response = await fetch(`${URL_ANDROID}/chat`, {
+            method: 'GET',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Fetched chats successfully");
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const postChat = async (chatName) => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const id = await AsyncStorage.getItem("WhatsThat_usr_id");
+        console.log(`Creating new chat for user ${id}`);
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'X-Authorization': token
+            },
+            body: JSON.stringify({ 
+                name: chatName
+            })
+        };
+
+        const response = await fetch(`${URL_ANDROID}/chat`, requestOptions);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Something went wrong");
+        }
+
+        console.log("Chat created successfully");
+    } catch (error) {
+        console.log(error.message);
+    }
+};
