@@ -418,3 +418,29 @@ export const postChat = async (chatName) => {
         console.log(error.message);
     }
 };
+
+export const getChatDetails = async (chatId) => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const id = await AsyncStorage.getItem("WhatsThat_usr_id");
+        console.log(`Fetching chat details for chat ${chatId}`)
+        const response = await fetch(`${URL_ANDROID}/chat/${chatId}?limit=20&offset=0`, {
+            method: 'GET',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Fetched chat successfully");
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}

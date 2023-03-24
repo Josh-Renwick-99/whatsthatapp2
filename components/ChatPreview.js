@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
-const ChatPreview = ({chatName, lastMessage, lastMessageAuthor}) => {
+const ChatPreview = ({chatName, lastMessage, lastMessageAuthor, viewChat}) => {
 
     return(
         <View style={styles.previewContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => viewChat()}>
                 <Text style={styles.nameText}>{chatName}</Text>
                 {(lastMessage && lastMessageAuthor) && (
                 <View style={styles.lastMessageContainer}>

@@ -2,37 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, TextInput, Text, View, Image, TouchableOpacity, Modal } from 'react-native';
 import styles from '../StyleSheets/chatsStyles'
 import ChatPreview from '../components/ChatPreview'
-import { postChat, getChats } from '../util/Client';
+import { postChat, getChats, getChatDetails } from '../util/Client';
 
-const ChatsScreen = () => {
+const ChatsScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [chatPreviewData, setChatPreviewData] = useState([])
   const [chatName, setChatName] = useState('')
 
+  const fetchChats = async () => {
+    const chats = await getChats()
+    setChatPreviewData(chats)
+  }
+
   useEffect(() => {
-    const fetchChats = async () => {
-      const chats = await getChats()
-      setChatPreviewData(chats)
-    }
     fetchChats()
-    console.log(chatPreviewData)
   }, [])
 
   const handleNewChat = async  () => {
     await postChat(chatName)
-    const chats = getChats()
-    setChatPreviewData(chats)
-    //setModalVisible(false)
+    await fetchChats();
+    setModalVisible(false)
+  }
+
+  
+  const handleViewChat = async (chatId) => {
+    const details = await getChatDetails(chatId)
+    navigation.navigate("chatScreen", {messageArray: details.messages, membersArray : details.members})
   }
 
   const renderItem = (item) => {
-    const { name, last_message } = item;
+    const { name, last_message, chat_id } = item;
     const { message, author } = last_message || {};
     return (
       <ChatPreview
         chatName={name}
         lastMessage={message}
         lastMessageAuthor={author?.name}
+        viewChat={() => handleViewChat(chat_id)}
       />
     );
   };

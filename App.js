@@ -8,9 +8,21 @@ import ProfileScreen from "./screens/profile";
 import ChatsScreen from "./screens/chats";
 import ContactsScreen from "./screens/contacts";
 import { AntDesign, Entypo } from '@expo/vector-icons';
+import ChatScreen1 from './screens/chat'
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
+
+function ChatStack() {
+  return(
+    <Stack.Navigator 
+      screenOptions={{
+      headerShown: false }}>
+      <Stack.Screen name="chats" component={ChatsScreen}/>
+      <Stack.Screen name="chatScreen" component={ChatScreen1}/>
+    </Stack.Navigator>
+  )
+}
 
 function TabNavigator() {
   return(
@@ -26,7 +38,7 @@ function TabNavigator() {
       />
       <Tab.Screen 
         name="chats" 
-        component={ChatsScreen}
+        component={ChatStack}
         options={{
           tabBarIcon: () => {
             return <Entypo name="chat" size={28} color="green" />
