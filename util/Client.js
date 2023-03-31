@@ -83,7 +83,7 @@ export const postLogout = async() => {
     await fetch(`${URL_ANDROID}/logout`, requestOptions)
 }
 
-export const getUserInfo = async(handleProfileUpdate) => {
+export const getUserInfo = async(handleProfileUpdate, justGet) => {
     const token = await AsyncStorage.getItem("WhatsThat_usr_token")
     const id = await AsyncStorage.getItem("WhatsThat_usr_id")
     const requestOptions = {
@@ -104,7 +104,11 @@ export const getUserInfo = async(handleProfileUpdate) => {
         }
     })
     .then(rJson => {
-        handleProfileUpdate(rJson.first_name, rJson.last_name, rJson.email)
+        if (justGet){
+            return rJson
+        } else {
+            handleProfileUpdate(rJson.first_name, rJson.last_name, rJson.email)
+        }
     })
 }
 
@@ -435,6 +439,57 @@ export const getChatDetails = async (chatId) => {
             console.log("Fetched chat successfully");
             const json = await response.json();
             return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const postChatMessage = async(chatId, m) => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        const id = await AsyncStorage.getItem("WhatsThat_usr_id");
+        console.log(`Posting message {${m}} to chat: ${chatId}`)
+        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/message`, {
+            method: 'POST',
+            headers: {
+            'X-Authorization' : token,
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: m })
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("posted message successfully");
+            const json = await response.json();
+            return json;
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const deleteMemberFromChat = async(chatId, id) => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        console.log(`Removing user {${id}} from chat: ${chatId}`)
+        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/user/${id}`, {
+            method: 'DELETE',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Removed user successfully");
         } else if (response.status === 400) {
             console.log("Unauthorized");
         } else {

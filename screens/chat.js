@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,49 +10,66 @@ import {
   Keyboard,
   FlatList,
   Dimensions,
+  Modal
 } from 'react-native';
 import { Icon } from '@rneui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserInfo, postChatMessage, getChatDetails, deleteMemberFromChat } from '../util/Client';
 const {width, height} = Dimensions.get('window');
 
 export default function ChatScreen1({ route, navigation }) {
 
-  const {messageArray, membersArray} = route.params
+  const {messageArray, membersArray, chat} = route.params
   const [messages, setMessages] = useState([])
+  const [members, setMembers] = useState(membersArray)
   const [inputMessage, setInputMessage] = useState('');
-
-  function getTime(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return strTime;
-  }
+  const [author, setAuthor] = useState('');
+  const [modalVisible, setModalVisible] = useState(false)
 
   function sendMessage() {
     if (inputMessage === '') {
       return setInputMessage('');
     }
-    let t = getTime(new Date());
-    setMessages([
-      ...messages,
-      {
-        sender: currentUser.name,
-        message: inputMessage,
-        time: t,
-      },
-    ]);
+    const updateChat = async () => {
+      await postChatMessage(chat, inputMessage)
+      const details = await getChatDetails(chat)
+      updateMessages(details.messages)
+    }
+    updateChat()
     setInputMessage('');
+  }
+
+  const updateMessages = (m) => {
+    setMessages(m)
+  }
+
+  const updateMembers = (m) => {
+    setMembers(m)
+  }
+
+  const handleRemoveMember = async (id) => {
+    const currId =  await AsyncStorage.getItem('WhatsThat_usr_id')
+    if (id.toString() === currId) {
+      console.log("here")
+      await route.params.handleRemoveChat(id)
+      setModalVisible(false)
+      navigation.goBack()
+    }
+    await deleteMemberFromChat(chat, id)
   }
 
   useEffect(() => {
     setMessages(messageArray)
+    setMembers(membersArray)
+    const fetchAuthor = async () => {
+      const userId = await AsyncStorage.getItem("WhatsThat_usr_id")
+      setAuthor(userId)
+    }
+    fetchAuthor()
   }, []);
 
   const renderItem = ({ item }) => {
-    console.log(item)
+    const isSender = author === item.author.user_id.toString();
   
     return (
       <TouchableWithoutFeedback>
@@ -69,7 +86,7 @@ export default function ChatScreen1({ route, navigation }) {
               borderBottomRightRadius: isSender ? 0 : 8,
             }}
           >
-        <Text style={{color:'#dfe4ea'}}>{item.sender}</Text>
+        <Text style={{color:'#dfe4ea'}}>{item.author.first_name} {item.author.last_name}</Text>
 
             <Text
               style={{
@@ -94,24 +111,27 @@ export default function ChatScreen1({ route, navigation }) {
     );
   };
   
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <View style={{flex: 1, marginTop: 50, paddingLeft: 20, height: 40,backgroundColor: 'red'}}>
+        <View style={{flex: 1, marginTop: 50, paddingLeft: 20, height: 60, paddingBottom: 15}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Image style={{height:50, width: 50,}} source={require("../assets/back-arrow.png")}/>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <Image style={{height:50, width: 50, marginLeft: 300}} source={require("../assets/info.png")}/>
+            </TouchableOpacity>
         </View>
-        <View style={{ height: height / 1.2, paddingTop: 30, marginTop: 40 }}>
+        <View style={{ height: height / 1.3, paddingTop: 20, marginTop: 20 }}>
           <FlatList
             style={{ backgroundColor: '#f2f2ff' }}
             inverted={true}
-            data={JSON.parse(JSON.stringify(messages)).reverse()}
+            data={JSON.parse(JSON.stringify(messages))}
             renderItem={renderItem}
           />
         </View>
-  
-        <View style={{ paddingVertical: 10 }}>
+        <View style={{ paddingVertical: 30}}>
           <View style={styles.messageInputView}>
             <TextInput
               defaultValue={inputMessage}
@@ -128,10 +148,65 @@ export default function ChatScreen1({ route, navigation }) {
             </TouchableOpacity>
           </View>
         </View>
+        <InfoModal modalVisible={modalVisible} setModalVisible={setModalVisible} members={members} handleRemoveMember={handleRemoveMember} />
       </View>
     </TouchableWithoutFeedback>
   );
-  
+}
+
+const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember }) => {
+
+  const [chatMembers, setChatMembers] = useState(members)
+
+  const removeMember = async (id) => {
+    await handleRemoveMember(id)
+    const mList = [...chatMembers]
+    const updatedList = mList.filter((item) => item.user_id !== id);
+    setChatMembers(updatedList)
+  }
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.memberItem}>
+        <View style={styles.memberInfo}>
+          <Text>{item.first_name} {item.last_name}</Text>
+          <Text>{item.email}</Text>
+        </View>
+        <TouchableOpacity onPress={() => removeMember(item.user_id)} style={styles.removeMember}>
+          <Text>Remove</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  return (
+    <Modal
+      animationType='fade'
+      transparent={true}
+      visible={modalVisible}
+    >
+      <View style={styles.modalView}>
+        <View style={styles.modalContent}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Image source={require("../assets/back-arrow.png")} style={{ height: 20, width: 20, resizeMode: 'contain' }} />
+          </TouchableOpacity>
+          <Text style={styles.modalText}>Members:</Text>
+          <FlatList
+            data={chatMembers}
+            renderItem={renderItem}
+          />
+          <View style = {styles.modalButtonContainer}>
+            <TouchableOpacity style = {styles.modalButton}>
+              <Text>Add member to chat</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -156,4 +231,60 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    width: '80%',
+    height: '40%',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  closeButton: {
+    height: 20,
+    width: 20,
+    resizeMode: 'contain',
+    alignSelf: 'flex-end',
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    paddingBottom: 10
+  },
+  memberItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  removeMember: {
+    backgroundColor: 'red',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginLeft: 20,
+    borderRadius: 5,
+  },
+  modalButtonContainer: {
+    flex: 1,
+
+  },
+  modalButton: {
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40,
+    width: 200
+  }
 });

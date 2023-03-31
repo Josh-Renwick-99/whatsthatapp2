@@ -24,10 +24,20 @@ const ChatsScreen = ({navigation}) => {
     setModalVisible(false)
   }
 
+  const handleRemoveChat = (id) => {
+    cList = [...chatPreviewData]
+    updateList = cList.filter((item) => item.chat_id !== id)
+    setChatPreviewData(updateList)
+  }
   
   const handleViewChat = async (chatId) => {
     const details = await getChatDetails(chatId)
-    navigation.navigate("chatScreen", {messageArray: details.messages, membersArray : details.members})
+    navigation.navigate("chatScreen", {
+      messageArray: details.messages,
+      membersArray: details.members,
+      chat: chatId,
+      handleRemoveChat: () => handleRemoveChat(chatId)
+    });
   }
 
   const renderItem = (item) => {
