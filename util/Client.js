@@ -1,26 +1,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const URL_ANDROID = `http://10.0.2.2:3333/api/1.0.0`;
-const URL_WEB = `http://localhost:3333/api/1.0.0`;
+const URLs = `http://10.0.2.2:3333/api/1.0.0`;
+const URL = `http://localhost:3333/api/1.0.0`;
 
-export const postLogin = async (enableButton, showToast, email, password) => {
+export const postLogin = async (enableButton, email, password) => {
+    console.log(email, password)
     if(email && password){
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, password: password })
         };   
-
         await fetch(
-            `${URL_ANDROID}/login`, requestOptions)
+            `${URL}/login`, requestOptions)
             .then(async (response) => {
             if (response.status === 200) {
-                showToast("Login Successful!")
+                console.log("Login Successful!")
                 return response.json()
             } else if (response.status === 400){
-                showToast("Invalid login credentials :(")
+                console.log("Invalid login credentials :(")
             } else {
-                showToast("Oops, something went wrong")
+                console.log("Oops, something went wrong")
             }
         })
         .then(async (responseJson) => {
@@ -37,12 +37,12 @@ export const postLogin = async (enableButton, showToast, email, password) => {
         })
 
     } else {
-        showToast("Login credentials cannot be empty")
+        console.log("Login credentials cannot be empty")
         enableButton
     }
 }
 
-export const postRegister = async (showToast, enableButton, firstName, lastName, email, password) => {
+export const postRegister = async (enableButton, firstName, lastName, email, password) => {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,15 +53,15 @@ export const postRegister = async (showToast, enableButton, firstName, lastName,
             password: password})
       };
       
-      await fetch(`${URL_ANDROID}/user`, requestOptions)
+      await fetch(`${URL}/user`, requestOptions)
           .then(async (response) => {
             if (response.status === 201) {
-                showToast("Registration Successful!")
+                console.log("Registration Successful!")
                 return response.json()
             } else if (response.status === 400){
-                showToast("Invalid email address :( ")
+                console.log("Invalid email address :( ")
             } else {
-                showToast("Oops, something went wrong")
+                console.log("Oops, something went wrong")
             }
         })
         .then(async (rJson) => {
@@ -80,7 +80,7 @@ export const postLogout = async() => {
             'X-Authorization': await AsyncStorage.getItem('WhatsThat_usr_token') 
         },
       };
-    await fetch(`${URL_ANDROID}/logout`, requestOptions)
+    await fetch(`${URL}/logout`, requestOptions)
 }
 
 export const getUserInfo = async(handleProfileUpdate, justGet) => {
@@ -93,7 +93,7 @@ export const getUserInfo = async(handleProfileUpdate, justGet) => {
         },
       };
     await fetch(
-        `${URL_ANDROID}/user/${id}`, requestOptions)
+        `${URL}/user/${id}`, requestOptions)
         .then(async (response) => {
         if (response.status === 200 || response.status === 304) {
             return response.json()
@@ -112,7 +112,7 @@ export const getUserInfo = async(handleProfileUpdate, justGet) => {
     })
 }
 
-export const patchUserInfo = async(showToast, first_name, last_name, email_address, pwd) => {
+export const patchUserInfo = async(first_name, last_name, email_address, pwd) => {
     const token = await AsyncStorage.getItem("WhatsThat_usr_token")
     const id = await AsyncStorage.getItem("WhatsThat_usr_id")
     console.log(`Received user detail patch request for ${id}`)
@@ -126,17 +126,17 @@ export const patchUserInfo = async(showToast, first_name, last_name, email_addre
             email: email_address,
             password: pwd })
       };
-      console.log(`${URL_ANDROID}/user/${id}`, requestOptions)
+      console.log(`${URL}/user/${id}`, requestOptions)
       await fetch(
-        `${URL_ANDROID}/user/${id}`, requestOptions)
+        `${URL}/user/${id}`, requestOptions)
         .then(async (response) => {
         if (response.status === 200) {
-            showToast("Details changed successfully")
+            console.log("Details changed successfully")
             return response.json()
         } else if (response.status === 400){
-            showToast("Bad inputs")
+            console.log("Bad inputs")
         } else {
-            showToast("Oops, something went wrong")
+            console.log("Oops, something went wrong")
         }
     })
     .then(async (responseJson) => {
@@ -154,8 +154,8 @@ export const getAvatar = async (handleSetAvatar) => {
     const id = await AsyncStorage.getItem("WhatsThat_usr_id");
     const token = await AsyncStorage.getItem("WhatsThat_usr_token");
     console.log("Get avatar request received")
-    console.log(`${URL_ANDROID}/user/${id}/photo`, token)
-    fetch(`${URL_ANDROID}/user/${id}/photo`, {
+    console.log(`${URL}/user/${id}/photo`, token)
+    fetch(`${URL}/user/${id}/photo`, {
         method: "GET",
         mode: "cors",
         headers: {
@@ -172,7 +172,7 @@ export const getAvatar = async (handleSetAvatar) => {
     .catch(error => console.error(error));
 }
 
-export const postAvatar = async (blob, handleSetAvatar, showToast) => {
+export const postAvatar = async (blob, handleSetAvatar) => {
     try {
         const id = await AsyncStorage.getItem("WhatsThat_usr_id");
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
@@ -182,7 +182,7 @@ export const postAvatar = async (blob, handleSetAvatar, showToast) => {
             throw new Error("User ID or token not found in AsyncStorage");
         }
 
-        await fetch(`${URL_ANDROID}/user/${id}/photo`, {
+        await fetch(`${URL}/user/${id}/photo`, {
             method: 'POST',
             headers: {
             'Content-Type': 'image/png',
@@ -192,7 +192,7 @@ export const postAvatar = async (blob, handleSetAvatar, showToast) => {
         })
         .then(response => {
             handleSetAvatar;
-            showToast("Avatar changed successfully")
+            console.log("Avatar changed successfully")
         })
         .catch(error => {
             console.log(error)
@@ -205,7 +205,7 @@ export const postAvatar = async (blob, handleSetAvatar, showToast) => {
 export const getContacts = async () => {
     try {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/contacts`, {
+        const response = await fetch(`${URL}/contacts`, {
             method: 'GET',
             headers: {
             'X-Authorization' : token,
@@ -229,7 +229,7 @@ export const getContacts = async () => {
 export const getUsers = async () => {
     try {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/search?search_in=all&limit=20&offset=0`, {
+        const response = await fetch(`${URL}/search?search_in=all&limit=20&offset=0`, {
             method: 'GET',
             headers: {
             'X-Authorization' : token,
@@ -254,7 +254,7 @@ export const addContact = async (id) => {
     try {
         console.log(`Attempting to add contact ${id}`)
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/user/${id}/contact`, {
+        const response = await fetch(`${URL}/user/${id}/contact`, {
             method: 'POST',
             headers: {
             'X-Authorization' : token,
@@ -277,7 +277,7 @@ export const removeContact = async(id) => {
     try {
         console.log(`Attempting to remove contact ${id}`)
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/user/${id}/contact`, {
+        const response = await fetch(`${URL}/user/${id}/contact`, {
             method: 'DELETE',
             headers: {
             'X-Authorization' : token,
@@ -300,7 +300,7 @@ export const getBlockedContacts = async() => {
     try {
         console.log(`Attempting to fetch blocked contacts`)
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/blocked`, {
+        const response = await fetch(`${URL}/blocked`, {
             method: 'GET',
             headers: {
             'X-Authorization' : token,
@@ -325,7 +325,7 @@ export const postBlockContact = async (id) => {
     try {
         console.log(`Attempting to block contact ${id}`)
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/user/${id}/block`, {
+        const response = await fetch(`${URL}/user/${id}/block`, {
             method: 'POST',
             headers: {
             'X-Authorization' : token,
@@ -348,7 +348,7 @@ export const deleteBlockedContact = async (id) => {
     try {
         console.log(`Attempting to unblock contact ${id}`)
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
-        const response = await fetch(`${URL_ANDROID}/user/${id}/block`, {
+        const response = await fetch(`${URL}/user/${id}/block`, {
             method: 'DELETE',
             headers: {
             'X-Authorization' : token,
@@ -372,7 +372,7 @@ export const getChats = async () => {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
         const id = await AsyncStorage.getItem("WhatsThat_usr_id");
         console.log(`Fetching chats for user ${id}`)
-        const response = await fetch(`${URL_ANDROID}/chat`, {
+        const response = await fetch(`${URL}/chat`, {
             method: 'GET',
             headers: {
             'X-Authorization' : token,
@@ -410,7 +410,7 @@ export const postChat = async (chatName) => {
             })
         };
 
-        const response = await fetch(`${URL_ANDROID}/chat`, requestOptions);
+        const response = await fetch(`${URL}/chat`, requestOptions);
         const data = await response.json();
 
         if (!response.ok) {
@@ -428,7 +428,7 @@ export const getChatDetails = async (chatId) => {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
         const id = await AsyncStorage.getItem("WhatsThat_usr_id");
         console.log(`Fetching chat details for chat ${chatId}`)
-        const response = await fetch(`${URL_ANDROID}/chat/${chatId}?limit=20&offset=0`, {
+        const response = await fetch(`${URL}/chat/${chatId}?limit=20&offset=0`, {
             method: 'GET',
             headers: {
             'X-Authorization' : token,
@@ -454,7 +454,7 @@ export const postChatMessage = async(chatId, m) => {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
         const id = await AsyncStorage.getItem("WhatsThat_usr_id");
         console.log(`Posting message {${m}} to chat: ${chatId}`)
-        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/message`, {
+        const response = await fetch(`${URL}/chat/${chatId}/message`, {
             method: 'POST',
             headers: {
             'X-Authorization' : token,
@@ -481,7 +481,7 @@ export const deleteMemberFromChat = async(chatId, id) => {
     try {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
         console.log(`Removing user {${id}} from chat: ${chatId}`)
-        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/user/${id}`, {
+        const response = await fetch(`${URL}/chat/${chatId}/user/${id}`, {
             method: 'DELETE',
             headers: {
             'X-Authorization' : token,
@@ -504,7 +504,7 @@ export const addMemberToChat = async(chatId, id) => {
     try {
         const token = await AsyncStorage.getItem("WhatsThat_usr_token");
         console.log(`Adding user {${id}} to chat: ${chatId}`)
-        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/user/${id}`, {
+        const response = await fetch(`${URL}/chat/${chatId}/user/${id}`, {
             method: 'POST',
             headers: {
             'X-Authorization' : token,

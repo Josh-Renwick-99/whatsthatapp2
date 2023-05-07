@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const Contact = ({item, removeContact, fromAddMemberChat, addMemberToChat, fromContacts, fromBlockList, addContact, blockContact, unblockContact}) => {
+const Contact = ({item, removeContact, fromFindContacts, fromAddMemberChat, addMemberToChat, fromContacts, fromBlockList, addContact, blockContact, unblockContact}) => {
 
     const handleRemoveContact = () => {
       removeContact();
@@ -34,9 +34,6 @@ const Contact = ({item, removeContact, fromAddMemberChat, addMemberToChat, fromC
         <>
           {fromContacts && (
             <>
-              <TouchableOpacity style={styles.button} onPress={() => addMemberToChat(item)}>
-                <Image style={{width: 26, height: 26, marginTop:4,}} source={require('../assets/chat.png')}></Image>
-              </TouchableOpacity>  
               <TouchableOpacity style={styles.button} onPress={() => handleRemoveContact()}>
                 <Image style={{width: 32, height: 32}} source={require('../assets/remove-contact.png')}></Image>
               </TouchableOpacity>  
@@ -52,7 +49,7 @@ const Contact = ({item, removeContact, fromAddMemberChat, addMemberToChat, fromC
               </TouchableOpacity>  
             </>
           )}
-          {!fromContacts && !fromAddMemberChat && (
+          {fromFindContacts && (
             <TouchableOpacity style={styles.chatButton} onPress={() => handleAddContact()}>
               <Image style={{width: 38, height: 38, marginRight: 20,}} source={require('../assets/add-contact.png')}></Image>
             </TouchableOpacity>     

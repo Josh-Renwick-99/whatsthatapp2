@@ -46,11 +46,6 @@ const ProfileScreen = () => {
     setEmail(email)
   }
 
-  const showToast = (message) => {
-    ToastAndroid.showWithGravity(message, ToastAndroid.SHORT, ToastAndroid.TOP);
-  }
-
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -62,7 +57,7 @@ const ProfileScreen = () => {
     if (!result.cancelled) {
       const response = await fetch(result.uri);
       const blob = await response.blob();
-      const respose = await postAvatar(blob, handleSetAvatar(result.uri), showToast)
+      const respose = await postAvatar(blob, handleSetAvatar(result.uri), console.log)
     } 
   };
 
@@ -81,7 +76,7 @@ const ProfileScreen = () => {
 
   const handleSubmitEdit = async () => {
     patchUserInfo(
-      showToast,
+      console.log,
       stagedFirstName ? stagedFirstName : firstName,
       stagedLastName ? stagedLastName : lastName, 
       stagedEmailName ? stagedEmailName : email, 

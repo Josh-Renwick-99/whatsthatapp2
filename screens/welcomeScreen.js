@@ -6,7 +6,6 @@ import {
   Dimensions,
   TextInput,
   Pressable,
-  ToastAndroid
 } from "react-native";
 import styles from "../StyleSheets/loginScreenStyles";
 import Svg, { Image, Ellipse, ClipPath } from "react-native-svg";
@@ -45,70 +44,67 @@ const WelcomeScreen = () => {
 
     return {
         transform: [
-        { translateY: withTiming(interpolation, { duration: 1000 }) },
+          { translateY: withTiming(interpolation, { duration: 1000 }) },
         ],
       };
     });
 
 
     const buttonsAnimatedStyle = useAnimatedStyle(() => {
-    const interpolation = interpolate(imagePosition.value, [0, 1], [250, 0]);
+    const interpolation = interpolate(imagePosition.value, [0, 1], [650, 0]);
     return {
         opacity: withTiming(imagePosition.value, { duration: 500 }),
         transform: [
-        { translateY: withTiming(interpolation, { duration: 1000 }) },
-        ],
-    };
+          { translateY: withTiming(interpolation, { duration: 1000 }) },
+          ],
+      };
     });
 
     const closeButtonContainerStyle = useAnimatedStyle(() => {
-    const interpolation = interpolate(imagePosition.value, [0, 1], [180, 360]);
-    return {
-        opacity: withTiming(imagePosition.value === 1 ? 0 : 1, { duration: 800 }),
-        transform: [
-        { rotate: withTiming(interpolation + "deg", { duration: 1000 }) },
-        ],
-    };
+      const interpolation = interpolate(imagePosition.value, [0, 1], [180, 360]);
+        return {
+            opacity: withTiming(imagePosition.value === 1 ? 0 : 1, { duration: 800 }),
+            transform: [
+            { rotate: withTiming(interpolation + "deg", { duration: 1000 }) },
+            ],
+        };
     });
 
     const formAnimatedStyle = useAnimatedStyle(() => {
-    return {
-        opacity:
-        imagePosition.value === 0
-            ? withDelay(400, withTiming(1, { duration: 800 }))
-            : withTiming(0, { duration: 300 }),
-    };
+      return {
+          opacity:
+          imagePosition.value === 0
+              ? withDelay(400, withTiming(1, { duration: 800 }))
+              : withTiming(0, { duration: 300 }),
+      };
     });
 
     const formButtonAnimatedStyle = useAnimatedStyle(() => {
-    return {
-        transform: [{scale: formButtonScale.value}]
-    }
+      return {
+          transform: [{scale: formButtonScale.value}]
+      }
     })
 
-    const showToast = (message) => {
-      ToastAndroid.showWithGravity(message, ToastAndroid.SHORT, ToastAndroid.TOP);
-    }
 
     const enableButton = () => {
     setDisabled(false)
     }
 
     const handleLogin = async () => {
-        setDisabled(true)
-        formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
-      
-        try {
-          await postLogin(enableButton, showToast, email.value, password.value)
-          handleSuccessfulLogin()
-        } catch (error) {
-          showToast(error.message)
-          setDisabled(false)
-        }
+      const e = email.value
+      const p = password.value
+      setDisabled(true)
+      formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
+      try {
+        await postLogin(enableButton, e, p)
+        handleSuccessfulLogin()
+      } catch (error) {
+        setDisabled(false)
       }
+    }
 
     const handleSuccessfulLogin = () => {
-        navigation.navigate('tabs')
+      navigation.navigate('tabs')
     }
     
 
@@ -128,22 +124,16 @@ const WelcomeScreen = () => {
         email.value,
         password.value,
         enableButton,
-        showToast
       );
     });
   }
   
 
     const handlePress = async () => {
-        setDisabled(true);
         if (isRegistering) {
-        await handleRegister();
-        closeButton();
-        setTimeout(loginButton, 1000); 
-        showToast("Registration Successful")
+          await handleRegister();
         } else {
-        await handleLogin();
-        closeButton();
+          await handleLogin();
         }
     };
 

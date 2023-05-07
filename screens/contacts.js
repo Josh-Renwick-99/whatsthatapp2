@@ -62,7 +62,7 @@ function ContactsScreen() {
     const bList = [...blocked]
     bList.push(contact)
     setBlocked(bList)
-    setUsers(uList);
+    setUsers(updatedList);
     setContacts(updatedList)
     postBlockContact(contact.user_id);
   }
@@ -108,7 +108,8 @@ function ContactsScreen() {
               <Text style={{fontSize: 22, fontWeight: 'bold'}}>Find Contacts</Text>
             </View>
             <ContactList 
-              contacts={users} 
+              contacts={users}
+              fromFindContacts 
               handleAddContact={(contact) => handleAddContact(contact)} />
           </View>
           <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
