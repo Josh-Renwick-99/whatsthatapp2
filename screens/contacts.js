@@ -62,7 +62,7 @@ function ContactsScreen() {
     const bList = [...blocked]
     bList.push(contact)
     setBlocked(bList)
-    setUsers(uList);
+    setUsers(updatedList);
     setContacts(updatedList)
     postBlockContact(contact.user_id);
   }

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, SectionList } from 'react-native';
 import styles  from '../StyleSheets/contactsStyles'
 import Contact from '../components/Contact'
-const ContactList = ({contacts, fromContacts, fromBlockList, fromAddMemberChat, addMember, handleAddContact, handleRemoveContact, handleBlockContact, handleUnblockContact}) => {
-    const [data, setData] = useState(contacts); 
+const ContactList = ({contacts, fromContacts, fromBlockList, fromFindContacts, fromAddMemberChat, addMember, handleAddContact, handleRemoveContact, handleBlockContact, handleUnblockContact}) => {    const [data, setData] = useState(contacts); 
     
     const sections = data.reduce((acc, contact) => {
         const letter = contact.last_name ? contact.last_name.charAt(0).toUpperCase() : contact.family_name.charAt(0).toUpperCase();
@@ -50,21 +49,33 @@ const ContactList = ({contacts, fromContacts, fromBlockList, fromAddMemberChat, 
   const addMemberToChat = async (item) => {
     addMember(item)
   }
+  const AddMemberContact = ({ item, addMemberToChat }) => {
+    return (
+      <Contact
+        item={item}
+        addMemberToChat = {addMemberToChat}
+      />
+    );
+  };
 
-  const renderItem = ({ item }) => (
-    <Contact 
-        item={item} 
-        removeContact={() => removeContact(item)}
-        addContact={() => addContact(item)}
-        blockContact={() => blockContact(item)}
-        unblockContact={() => unblockContact(item)}
-        fromContacts = {fromContacts}
-        fromBlockList = {fromBlockList}
-        fromAddMemberChat = {fromAddMemberChat}
-        addMemberToChat = {addMemberToChat(item)}
-        >
-    </Contact>
-  );
+  const renderItem = ({ item }) => {
+    if (fromAddMemberChat) {
+      return <AddMemberContact item={item} addMemberToChat={addMemberToChat(item)} />;
+    } else {
+      return (
+        <Contact
+          item={item}
+          removeContact={() => removeContact(item)}
+          addContact={() => addContact(item)}
+          blockContact={() => blockContact(item)}
+          unblockContact={() => unblockContact(item)}
+          fromContacts={fromContacts}
+          fromFindContacts={fromFindContacts}
+          fromBlockList={fromBlockList}
+        />
+      );
+    }
+  };
 
   return (
       <View style={styles.listContainer}>

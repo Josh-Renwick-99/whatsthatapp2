@@ -201,7 +201,7 @@ const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember,
           <Text>{item.email}</Text>
         </View>
         <TouchableOpacity onPress={() => removeMember(item.user_id)} style={styles.removeMember}>
-          <Text>Remove</Text>
+          <Image style={{width: 32, height: 32}} source={require('../assets/remove-contact.png')}></Image>
         </TouchableOpacity>
       </View>
     );
@@ -319,7 +319,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   removeMember: {
-    backgroundColor: 'red',
     paddingVertical: 5,
     paddingHorizontal: 10,
     marginLeft: 20,
