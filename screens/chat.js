@@ -125,7 +125,6 @@ export default function ChatScreen1({ route, navigation }) {
   
   
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={{flex: 1, marginTop: 50, paddingLeft: 20, height: 60, paddingBottom: 15}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -135,7 +134,7 @@ export default function ChatScreen1({ route, navigation }) {
                 <Image style={{height:50, width: 50, marginLeft: 300}} source={require("../assets/info.png")}/>
             </TouchableOpacity>
         </View>
-        <View style={{ height: height / 1.3, paddingTop: 20, marginTop: 20 }}>
+        <View style={{ height: height / 1.5, paddingTop: 45, marginTop: 20, paddingBottom: 50 }}>
           <FlatList
             style={{ backgroundColor: '#f2f2ff' }}
             inverted={true}
@@ -143,7 +142,7 @@ export default function ChatScreen1({ route, navigation }) {
             renderItem={renderItem}
           />
         </View>
-        <View style={{ paddingVertical: 30}}>
+        <View style={{paddingTop: 20, bottom: 0}}>
           <View style={styles.messageInputView}>
             <TextInput
               defaultValue={inputMessage}
@@ -171,7 +170,6 @@ export default function ChatScreen1({ route, navigation }) {
         handleAddMember = {handleAddMember}
         fromAddMemberChat />
       </View>
-    </TouchableWithoutFeedback>
   );
 }
 
@@ -201,7 +199,7 @@ const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember,
           <Text>{item.email}</Text>
         </View>
         <TouchableOpacity onPress={() => removeMember(item.user_id)} style={styles.removeMember}>
-          <Text>Remove</Text>
+          <Image style={{width: 26, height: 26, marginTop:4,}} source={require('../assets/add-contact.png')}></Image>
         </TouchableOpacity>
       </View>
     );
@@ -244,7 +242,7 @@ const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember,
         <View style={styles.modalView}>
           <View style={styles.modalContent}>
             <TouchableOpacity style={styles.closeButton} onPress={() => setAddMemberModalVisible(false)}>
-              <Image source={require("../assets/back-arrow.png")} style={{ height: 20, width: 20, resizeMode: 'contain' }} />
+              <Image source={require("../assets/remove-contact.png")} style={{ height: 32, width: 32, resizeMode: 'contain' }} />
             </TouchableOpacity>
             <View style={{flex: 1, width: 270,}}>
               <ContactList
@@ -272,11 +270,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 14,
     backgroundColor: '#fff',
     borderRadius: 4,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60
   },
+  
   messageInput: {
-    height: 40,
+    height: 60,
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 25,
+    marginBottom: 200,
   },
   messageSendView: {
     paddingHorizontal: 10,
@@ -319,7 +324,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   removeMember: {
-    backgroundColor: 'red',
     paddingVertical: 5,
     paddingHorizontal: 10,
     marginLeft: 20,
