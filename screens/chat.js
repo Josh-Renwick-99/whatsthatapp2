@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import { Icon } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getUserInfo, postChatMessage, getChatDetails, deleteMemberFromChat } from '../util/Client';
+import {getContacts, getUserInfo, addMemberToChat, postChatMessage, getChatDetails, deleteMemberFromChat } from '../util/Client';
+import ContactList from '../components/ContactList';
 const {width, height} = Dimensions.get('window');
 
 export default function ChatScreen1({ route, navigation }) {
@@ -25,6 +26,9 @@ export default function ChatScreen1({ route, navigation }) {
   const [inputMessage, setInputMessage] = useState('');
   const [author, setAuthor] = useState('');
   const [modalVisible, setModalVisible] = useState(false)
+  const [addMemberModal, setAddMemberModalVisible] = useState(false)
+  const [contacts, setContacts] = useState([]);
+
 
   function sendMessage() {
     if (inputMessage === '') {
@@ -47,6 +51,10 @@ export default function ChatScreen1({ route, navigation }) {
     setMembers(m)
   }
 
+  const handleAddMember = async (id) => {
+    await addMemberToChat(chat, id)
+  }
+
   const handleRemoveMember = async (id) => {
     const currId =  await AsyncStorage.getItem('WhatsThat_usr_id')
     if (id.toString() === currId) {
@@ -65,7 +73,11 @@ export default function ChatScreen1({ route, navigation }) {
       const userId = await AsyncStorage.getItem("WhatsThat_usr_id")
       setAuthor(userId)
     }
+    const fetchContacts = async () => {
+      setContacts(await getContacts())
+    }
     fetchAuthor()
+    fetchContacts()
   }, []);
 
   const renderItem = ({ item }) => {
@@ -148,15 +160,31 @@ export default function ChatScreen1({ route, navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-        <InfoModal modalVisible={modalVisible} setModalVisible={setModalVisible} members={members} handleRemoveMember={handleRemoveMember} />
+        <InfoModal 
+        modalVisible={modalVisible} 
+        setModalVisible={setModalVisible} 
+        members={members} 
+        handleRemoveMember={handleRemoveMember} 
+        addMemberModal={addMemberModal} 
+        setAddMemberModalVisible={setAddMemberModalVisible} 
+        contacts={contacts}
+        handleAddMember = {handleAddMember}
+        fromAddMemberChat />
       </View>
     </TouchableWithoutFeedback>
   );
 }
 
-const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember }) => {
+const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember, handleAddMember, addMemberModal, setAddMemberModalVisible, contacts, fromAddMemberChat }) => {
 
   const [chatMembers, setChatMembers] = useState(members)
+
+  const addMember = async (item) => {
+    await handleAddMember(item.user_id)
+    const mList = [...chatMembers]
+    const updatedList = mList.push(id)
+    setChatMembers(updatedList)
+  }
 
   const removeMember = async (id) => {
     await handleRemoveMember(id)
@@ -180,32 +208,55 @@ const InfoModal = ({ modalVisible, setModalVisible, members, handleRemoveMember 
   };
 
   return (
-    <Modal
-      animationType='fade'
-      transparent={true}
-      visible={modalVisible}
-    >
-      <View style={styles.modalView}>
-        <View style={styles.modalContent}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Image source={require("../assets/back-arrow.png")} style={{ height: 20, width: 20, resizeMode: 'contain' }} />
-          </TouchableOpacity>
-          <Text style={styles.modalText}>Members:</Text>
-          <FlatList
-            data={chatMembers}
-            renderItem={renderItem}
-          />
-          <View style = {styles.modalButtonContainer}>
-            <TouchableOpacity style = {styles.modalButton}>
-              <Text>Add member to chat</Text>
+    <>
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={modalVisible}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Image source={require("../assets/back-arrow.png")} style={{ height: 20, width: 20, resizeMode: 'contain' }} />
             </TouchableOpacity>
+            <Text style={styles.modalText}>Members:</Text>
+            <FlatList
+              data={chatMembers}
+              renderItem={renderItem}
+            />
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setAddMemberModalVisible(true)}>
+                <Text>Add member to chat</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={addMemberModal}
+        onRequestClose={() => setAddMemberModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setAddMemberModalVisible(false)}>
+              <Image source={require("../assets/back-arrow.png")} style={{ height: 20, width: 20, resizeMode: 'contain' }} />
+            </TouchableOpacity>
+            <View style={{flex: 1, width: 270,}}>
+              <ContactList
+                contacts = {contacts}
+                fromAddMemberChat = {fromAddMemberChat}
+                addMember = {addMember}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 

@@ -4,7 +4,8 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 const ChatPreview = ({chatName, lastMessage, lastMessageAuthor, viewChat}) => {
 
     return(
-        <View style={styles.previewContainer}>
+        <View style={styles.container}>
+            <View style={styles.divider} />
             <TouchableOpacity onPress={() => viewChat()}>
                 <Text style={styles.nameText}>{chatName}</Text>
                 {(lastMessage && lastMessageAuthor) && (
@@ -16,6 +17,7 @@ const ChatPreview = ({chatName, lastMessage, lastMessageAuthor, viewChat}) => {
                 </View>
                 )}
             </TouchableOpacity>
+            <View style={styles.divider} />
         </View>
     )
 }
@@ -24,12 +26,15 @@ export default ChatPreview
 
 const styles = StyleSheet.create({
     previewContainer: {
-        backgroundColor: 'white',
-        paddingTop: 15,
-        paddingBottom: 15,
-        paddingLeft: 15,
+        paddingLeft: 25,
+    },
+    divider: {
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: 'gray',
+        marginVertical: 5,
     },
     nameText: {
+        flex: 1,
         fontSize: 18,
         fontWeight: 'bold'
     },

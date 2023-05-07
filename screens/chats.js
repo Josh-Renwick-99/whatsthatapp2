@@ -47,7 +47,7 @@ const ChatsScreen = ({navigation}) => {
       <ChatPreview
         chatName={name}
         lastMessage={message}
-        lastMessageAuthor={author?.name}
+        lastMessageAuthor={author?.first_name + ' ' + author?.last_name}
         viewChat={() => handleViewChat(chat_id)}
       />
     );

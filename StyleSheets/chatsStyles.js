@@ -6,10 +6,12 @@ const styles = StyleSheet.create({
         flex: 1,
         height: height,
         width: width,
+        backgroundColor:'white'
     },
     chatListContainer: {
         height: height/1.2,
         marginTop: 80,
+        backgroundColor: 'white',
     },
     topContainer: {
         backgroundColor: 'white',

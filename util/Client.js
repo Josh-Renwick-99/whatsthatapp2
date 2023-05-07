@@ -499,3 +499,26 @@ export const deleteMemberFromChat = async(chatId, id) => {
         console.log(error);
     }
 }
+
+export const addMemberToChat = async(chatId, id) => {
+    try {
+        const token = await AsyncStorage.getItem("WhatsThat_usr_token");
+        console.log(`Adding user {${id}} to chat: ${chatId}`)
+        const response = await fetch(`${URL_ANDROID}/chat/${chatId}/user/${id}`, {
+            method: 'POST',
+            headers: {
+            'X-Authorization' : token,
+            },
+        });
+    
+        if (response.status === 200 || response.status === 304) {
+            console.log("Added user successfully");
+        } else if (response.status === 400) {
+            console.log("Unauthorized");
+        } else {
+            console.log("Oops, something went wrong");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
