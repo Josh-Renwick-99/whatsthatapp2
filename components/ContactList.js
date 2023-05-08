@@ -49,11 +49,13 @@ const ContactList = ({contacts, fromContacts, fromBlockList, fromFindContacts, f
   const addMemberToChat = async (item) => {
     addMember(item)
   }
+
   const AddMemberContact = ({ item, addMemberToChat }) => {
     return (
       <Contact
         item={item}
-        addMemberToChat = {addMemberToChat}
+        addMemberToChat = {() => addMemberToChat(item)}
+        fromAddMemberChat
       />
     );
   };

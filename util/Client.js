@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const URL_ANDROID = `http://10.0.2.2:3333/api/1.0.0`;
 const URL_WEB = `http://localhost:3333/api/1.0.0`;
 
-export const postLogin = async (enableButton, showToast, email, password) => {
+export const postLogin = async (enableButton, showToast, email, password, setLoggedIn) => {
     if(email && password){
         const requestOptions = {
             method: 'POST',
@@ -24,18 +24,15 @@ export const postLogin = async (enableButton, showToast, email, password) => {
             }
         })
         .then(async (responseJson) => {
-            console.log(responseJson)
-            try {
+            if (responseJson){
                 await AsyncStorage.setItem("WhatsThat_usr_id", responseJson.id.toString())
                 await AsyncStorage.setItem("WhatsThat_usr_token", responseJson.token)
-            } catch {
-                throw "Something went wrong"
+                await setLoggedIn()
             }
         })
         .then(() =>{
             enableButton
         })
-
     } else {
         showToast("Login credentials cannot be empty")
         enableButton

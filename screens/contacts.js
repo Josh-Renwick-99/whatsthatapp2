@@ -127,6 +127,7 @@ function ContactsScreen() {
             </View>
             <ContactList 
               contacts={blocked}
+              handleAddContact={(contact) => handleAddContact(contact)}
               handleUnblockContact={(contact) => handleUnblockContact(contact)}
               fromBlockList 
           />

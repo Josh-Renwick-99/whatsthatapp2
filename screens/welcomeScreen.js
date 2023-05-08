@@ -23,6 +23,7 @@ import Animated, {
 import { emailValidator, passwordValidator } from "../util/Validator";
 import { postLogin, postRegister } from "../util/Client";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = () => {
     const navigation = useNavigation()
@@ -95,17 +96,15 @@ const WelcomeScreen = () => {
     setDisabled(false)
     }
 
+    const setLoggedIn = async () => {
+      setLoginSuccessful(true)
+      handleSuccessfulLogin()
+    }
+
     const handleLogin = async () => {
         setDisabled(true)
         formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
-      
-        try {
-          await postLogin(enableButton, showToast, email.value, password.value)
-          handleSuccessfulLogin()
-        } catch (error) {
-          showToast(error.message)
-          setDisabled(false)
-        }
+        await postLogin(enableButton, showToast, email.value, password.value, setLoggedIn)
       }
 
     const handleSuccessfulLogin = () => {
@@ -145,13 +144,13 @@ const WelcomeScreen = () => {
     const handlePress = async () => {
         setDisabled(true);
         if (isRegistering) {
-        await handleRegister();
-        closeButton();
-        setTimeout(loginButton, 1000); 
-        showToast("Registration Successful")
+          await handleRegister();
+          closeButton();
+          setTimeout(loginButton, 1000); 
+          showToast("Registration Successful")
         } else {
-        await handleLogin();
-        closeButton();
+          await handleLogin();
+          closeButton();
         }
     };
 
