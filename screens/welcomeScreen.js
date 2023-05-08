@@ -20,6 +20,7 @@ import Animated, {
   withSequence,
   withSpring
 } from "react-native-reanimated";
+import { emailValidator, passwordValidator } from "../util/Validator";
 import { postLogin, postRegister } from "../util/Client";
 import { useNavigation } from "@react-navigation/native";
 
@@ -116,6 +117,13 @@ const WelcomeScreen = () => {
     return new Promise((resolve, reject) => {
       setDisabled(true)
       formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
+      const emailError = emailValidator(email.value)
+      const passwordError = passwordValidator(password.value)
+      if (emailError) {
+        showToast(emailError)
+      } else if (passwordError){
+        showToast(passwordError)
+      } else {
       postRegister(
         () => {
           resolve();
@@ -123,17 +131,17 @@ const WelcomeScreen = () => {
         (error) => {
           reject(error);
         },
-        firstName.value,
-        lastName.value,
-        email.value,
-        password.value,
-        enableButton,
-        showToast
-      );
+          firstName.value,
+          lastName.value,
+          email.value,
+          password.value,
+          enableButton,
+          showToast
+        );
+     }
     });
-  }
-  
-
+   }
+   
     const handlePress = async () => {
         setDisabled(true);
         if (isRegistering) {
