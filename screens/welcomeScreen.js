@@ -21,6 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { postLogin, postRegister } from "../util/Client";
 import { useNavigation } from "@react-navigation/native";
+import { validator } from '../util/Client'
 
 const WelcomeScreen = () => {
     const navigation = useNavigation()
@@ -108,25 +109,33 @@ const WelcomeScreen = () => {
     }
     
 
-  const handleRegister = () => {
-    return new Promise((resolve, reject) => {
-      setDisabled(true)
-      formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
-      postRegister(
-        () => {
-          resolve();
-        },
-        (error) => {
-          reject(error);
-        },
-        firstName.value,
-        lastName.value,
-        email.value,
-        password.value,
-        enableButton,
-      );
-    });
-  }
+    const handleRegister = () => {
+      return new Promise((resolve, reject) => {
+        setDisabled(true)
+        formButtonScale.value = withSequence(withSpring(1.5), withSpring(1)) 
+        const emailError = emailValidator(email.value)
+        const passwordError = passwordValidator(password.value)
+        if (emailError) {
+          console.log(emailError)
+        } else if (passwordError){
+          console.log(passwordError)
+        } else {
+        postRegister(
+          () => {
+            resolve();
+          },
+          (error) => {
+            reject(error);
+          },
+            firstName.value,
+            lastName.value,
+            email.value,
+            password.value,
+            enableButton,
+          );
+       }
+      });
+     }
   
 
     const handlePress = async () => {
