@@ -36,7 +36,7 @@ const ProfileScreen = () => {
     const loadInfo = async() => {
       await getUserInfo(handleProfileUpdate)
     }
-    //loadAvatar()
+    loadAvatar()
     loadInfo()
   }, [handleSetAvatar, handleProfileUpdate])
   
